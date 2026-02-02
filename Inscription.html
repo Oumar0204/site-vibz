@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Inscription</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url("FondVibz.png") no-repeat center / cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.75);
+      z-index: -1;
+    }
+
+    .card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #22c55e;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 25px;
+      border: none;
+      background: #22c55e;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    a {
+      margin-top: 15px;
+      display: inline-block;
+      color: #22c55e;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>S'inscrire</h2>
+
+    <form id="registerForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="text" id="username" placeholder="Identifiant" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <input type="password" id="confirm" placeholder="Confirmer le mot de passe" required>
+
+      <button type="submit" href="f1.html">S'inscrire</button>
+    </form>
+
+    <a href="connexion.html">Déjà un compte</a>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabase = supabaseJs.createClient(
+  "https://oppyogcmkfctmkbhnbly.supabase.co",
+  "TA_CLE_ANON"
+);
+
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const username = document.getElementById("username").value;
+
+  if (password !== confirm) {
+    alert("Les mots de passe ne correspondent pas");
+    return;
+  }
+
+  // 1️⃣ inscription Auth
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  // 2️⃣ insertion profil
+  const { error: profileError } = await supabase.from("profiles").insert({
+    id: data.user.id,
+    email: email,
+    username: username
+  });
+
+  if (profileError) {
+    alert("Erreur profil: " + profileError.message);
+    return;
+  }
+
+  alert("Compte créé avec succès");
+  window.location.href = "f1.html";
+});
+</script>
+</body>
+</html>

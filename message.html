@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages Vibz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { min-height: 100vh; background: #f9fafb; padding: 30px 110px 30px 30px; }
+    h1 { text-align: center; margin-bottom: 20px; }
+
+    .messages { max-width: 600px; margin: auto; display: flex; flex-direction: column; gap: 10px; }
+    .message { max-width: 70%; padding: 10px 14px; border-radius: 18px; position: relative; word-wrap: break-word; }
+    .message.sent { background: #22c55e; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .message.received { background: #e5e7eb; color: #111827; align-self: flex-start; border-bottom-left-radius: 4px; }
+
+    .sender { font-weight: 600; font-size: 12px; margin-bottom: 4px; opacity: 0.7; }
+
+    .empty { text-align: center; color: #6b7280; font-size: 16px; margin-top: 20px; }
+
+    .send-form { max-width: 600px; margin: 20px auto 40px auto; display: flex; gap: 10px; }
+    select, input[type="text"] { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; }
+    button.send-btn { padding: 10px 18px; background: #22c55e; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    button.send-btn:hover { background: #16a34a; }
+
+    .sidebar {
+      position: fixed; right: 20px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 22px;
+      background: white; padding: 18px 14px; border-radius: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    .sidebar img { width: 28px; height: 28px; cursor: pointer; opacity: 0.6; transition: transform 0.2s ease, opacity 0.2s ease; }
+    .sidebar img.active { opacity: 1; transform: scale(1.2); }
+    .sidebar img:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+  <h1>Mes messages</h1>
+
+  <div class="send-form">
+    <select id="receiverSelect">
+      <option value="">Sélectionner un destinataire</option>
+    </select>
+    <input type="text" id="messageInput" placeholder="Écrire un message...">
+    <button class="send-btn" onclick="sendMessage()">Envoyer</button>
+  </div>
+
+  <div class="messages" id="messagesContainer"></div>
+
+  <div class="sidebar">
+    <img src="eclaire.png" alt="Favoris" onclick="location.href='favoris.html'">
+    <img src="home.png" alt="Découvrir" onclick="location.href='activite.html'">
+    <img src="compte.png" alt="Compte" onclick="location.href='compte.html'">
+    <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="js/supabase.js"></script>
+
+  <script>
+    let currentUser;
+
+    async function init() {
+      // Utilisateur connecté
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) { alert("Erreur utilisateur"); return; }
+      currentUser = user;
+
+      // Charger utilisateurs pour le select
+      const { data: users, error: usersError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .neq('id', currentUser.id);
+
+      if (usersError) { console.error(usersError); return; }
+
+      const select = document.getElementById('receiverSelect');
+      users.forEach(u => {
+        const option = document.createElement('option');
+        option.value = u.id;
+        option.textContent = u.username;
+        select.appendChild(option);
+      });
+
+      loadMessages();
+      setInterval(loadMessages, 3000); // rafraîchissement toutes les 3s
+    }
+
+    async function loadMessages() {
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: true });
+
+      const container = document.getElementById('messagesContainer');
+      container.innerHTML = "";
+
+      if (error) { 
+        container.innerHTML = `<div class="empty">Impossible de charger les messages 😔</div>`; 
+        console.error(error);
+        return;
+      }
+
+      if (!messages.length) {
+        container.innerHTML = `<div class="empty">Aucun message 😔</div>`;
+        return;
+      }
+
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'message ' + (msg.sender_id === currentUser.id ? 'sent' : 'received');
+        div.innerHTML = `
+          <div class="sender">${msg.sender_id === currentUser.id ? "Moi" : msg.sender_id}</div>
+          <div class="content">${msg.content}</div>
+        `;
+        container.appendChild(div);
+      });
+
+      // Scroll automatique en bas
+      container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const receiverId = document.getElementById('receiverSelect').value;
+      const content = document.getElementById('messageInput').value.trim();
+
+      if (!receiverId || !content) { alert("Sélectionne un destinataire et écris un message"); return; }
+
+      const { error } = await supabase
+        .from('messages')
+        .insert([{ sender_id: currentUser.id, receiver_id: receiverId, content }]);
+
+      if (error) { alert("Erreur lors de l'envoi"); console.error(error); return; }
+
+      document.getElementById('messageInput').value = "";
+      loadMessages();
+    }
+
+    init();
+  </script>
+</body>
+</html>

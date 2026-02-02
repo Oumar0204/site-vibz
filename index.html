@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accueil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+	  background-image: "/FondVibz.png/"
+    }
+
+    body {
+      min-height: 100vh;
+      background: #ffffff;
+      color: #1f2933;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: flex-end;
+      padding: 20px 40px;
+    }
+
+    header button {
+      margin-left: 15px;
+      padding: 10px 22px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid #22c55e;
+    }
+
+    /* Bouton principal */
+    .login {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    .login:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+
+    /* Bouton secondaire */
+    .signup {
+      background: transparent;
+      color: #22c55e;
+    }
+
+    .signup:hover {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    /* MAIN CONTENT */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .center-image {
+      width: 320px;
+      max-width: 80%;
+      border-radius: 20px;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    h3 {
+      font-weight: 400;
+      color: #4b5563;
+      max-width: 600px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      header {
+        padding: 15px 20px;
+      }
+
+      header button {
+        padding: 8px 18px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+  <button class="login" onclick="window.location.href='connexion.html'">
+    Se connecter
+  </button>
+  <button class="signup" onclick="window.location.href='Inscription.html'">
+    S'inscrire
+  </button>
+</header>
+
+
+  <main>
+    <img src="vibz.png" alt="Image centrale" class="center-image">
+    <h2>Fais des rencontres qui matchent avec tes vibes</h2>
+    <h3>
+      En t’inscrivant, t’es ok avec nos conditions, notre politique de confidentialité
+      et les règles de la communauté. Let’s vibzzz 💚
+    </h3>
+  </main>
+
+</body>
+</html>

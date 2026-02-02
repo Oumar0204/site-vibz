@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url("FondVibz.png") no-repeat center center / cover;
+      color: #1f2933;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* voile pour lisibilité */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.75);
+      z-index: -1;
+    }
+
+    /* CONTAINER */
+    .card {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    input {
+      padding: 12px 15px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #22c55e;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 25px;
+      border: none;
+      background: #22c55e;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    a {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #22c55e;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+  <a href="Inscription.html" class="btn-retour">retour</a>
+    <h2>Je m'appelle</h2>
+
+    <form>
+      <input type="text" name="prenom" placeholder="Prenom">
+	  <input type="text" name="nom" placeholder="Nom">
+
+      <button
+  type="button"
+  class="signup"
+  onclick="window.location.href='f2.html'">
+  Continuer
+</button>
+    </form>
+  </div>
+
+</body>
+</html>

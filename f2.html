@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url("FondVibz.png") no-repeat center center / cover;
+      color: #1f2933;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.75);
+      z-index: -1;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 25px;
+      border: 2px solid #22c55e;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #ffffff; /* blanc par défaut */
+      color: #22c55e;      /* texte vert par défaut */
+    }
+
+    button:hover {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    /* bouton actif sélectionné pour Homme/Femme/Autre */
+    .gender-btn.active {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    /* bouton Continuer complètement indépendant */
+    .continue-btn {
+      background: #22c55e;
+      color: #ffffff;
+      border: none;
+    }
+
+    .continue-btn:hover {
+      background: #16a34a;
+    }
+
+    a.btn-retour {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #22c55e;
+      text-decoration: none;
+    }
+
+    a.btn-retour:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <a href="f1.html" class="btn-retour">Retour</a>
+    <h2>Je suis un/e</h2>
+
+    <form>
+      <!-- Boutons sélectionnables -->
+      <button type="button" class="gender-btn">Homme</button>
+      <button type="button" class="gender-btn">Femme</button>
+      <button type="button" class="gender-btn">Autre</button>
+      
+      <!-- Bouton Continuer indépendant -->
+      <button
+        type="button"
+        class="continue-btn"
+        onclick="window.location.href='f3.html'">
+        Continuer
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // sélection unique pour boutons Homme/Femme/Autre
+    const genderButtons = document.querySelectorAll('.gender-btn');
+
+    genderButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // on retire active de tous les boutons
+        genderButtons.forEach(b => b.classList.remove('active'));
+        // on active seulement le bouton cliqué
+        btn.classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

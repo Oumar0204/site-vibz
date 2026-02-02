@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes favoris</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { min-height:100vh; background:#f9fafb; padding:30px 110px 30px 30px;}
+    h1 { text-align:center; margin-bottom:30px; }
+    .favorites { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:20px; max-width:1000px; margin:auto;}
+    .card { background:white; border-radius:18px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.08); position:relative;}
+    .card img { width:100%; height:140px; object-fit:cover; }
+    .card-content { padding:14px; }
+    .card h3 { font-size:16px; margin-bottom:4px; }
+    .card p { font-size:14px; color:#6b7280; }
+    .remove { position:absolute; top:10px; right:10px; background:#ef4444; color:white; border:none; width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; }
+    .empty { text-align:center; color:#6b7280; font-size:18px; }
+    .sidebar { position:fixed; right:20px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:22px; background:white; padding:18px 14px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.12);}
+    .sidebar img { width:28px; height:28px; cursor:pointer; opacity:0.6; transition: transform 0.2s ease, opacity 0.2s ease; }
+    .sidebar img.active { opacity:1; transform:scale(1.2);}
+    .sidebar img:hover { opacity:1;}
+  </style>
+</head>
+<body>
+
+<h1>Mes activités favorites</h1>
+<div class="favorites" id="favorites"></div>
+
+<div class="sidebar">
+  <img src="message.jpg" alt="Messages" onclick="location.href='message.html'">
+  <img src="home.png" alt="Découvrir" onclick="location.href='activite.html'">
+  <img src="compte.png" alt="Compte" onclick="location.href='compte.html'">
+  <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    "https://oppyogcmkfctmkbhnbly.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+  );
+
+  const container = document.getElementById("favorites");
+
+  async function loadFavorites() {
+    container.innerHTML = "";
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      container.innerHTML = `<div class="empty">Connecte-toi pour voir tes favoris 😔</div>`;
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("favorites")
+      .select("activity_id, activities(name, location, image)")
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    if (!data.length) {
+      container.innerHTML = `<div class="empty">Aucun favori 😔</div>`;
+      return;
+    }
+
+    data.forEach(fav => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <button class="remove" onclick="removeFavorite('${fav.activity_id}')">✕</button>
+        <img src="${fav.activities.image}">
+        <div class="card-content">
+          <h3>${fav.activities.name}</h3>
+          <p>${fav.activities.location}</p>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function removeFavorite(activityId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from("favorites")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("activity_id", activityId);
+
+    loadFavorites();
+  }
+
+  loadFavorites();
+</script>
+
+</body>
+</html>

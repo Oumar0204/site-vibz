@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url("FondVibz.png") no-repeat center center / cover;
+      color: #1f2933;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.75);
+      z-index: -1;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+    button {
+      margin-top: 10px;
+      padding: 10px 8px;
+	  font-size: 14px;
+	  white-space: nowrap;
+      border-radius: 25px;
+      border: 2px solid #22c55e;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #ffffff; /* blanc par défaut */
+      color: #22c55e;      /* texte vert par défaut */
+    }
+
+    button:hover {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    /* bouton actif sélectionné pour Homme/Femme/Autre */
+    .gender-btn.active {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    /* bouton Continuer complètement indépendant */
+    .continue-btn {
+      background: #22c55e;
+      color: #ffffff;
+      border: none;
+    }
+
+    .continue-btn:hover {
+      background: #16a34a;
+    }
+
+    a.btn-retour {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: #22c55e;
+      text-decoration: none;
+    }
+	
+	.continue-btn {
+  grid-column: 1 / -1;
+}
+
+    a.btn-retour:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 30px 20px;
+      }
+    }
+	
+	.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.column h2 {
+  margin-bottom: 15px;
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+/* mobile */
+@media (max-width: 768px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <a href="f9.html" class="btn-retour">Retour</a>
+	<a href="activite.html" class="btn-retour">Skip</a>
+    <div class="columns">
+
+    <!-- COLONNE FR -->
+    <div class="column">
+      <h2>RAP (FR)</h2>
+      <div class="buttons-grid">
+      <button type="button" class="gender-btn">SCH</button>
+      <button type="button" class="gender-btn">Booba</button>
+	  <button type="button" class="gender-btn">Kaaris</button>
+      <button type="button" class="gender-btn">Gazo</button>
+	  <button type="button" class="gender-btn">KobaLaD</button>
+	  <button type="button" class="gender-btn">Ziak </button>
+      <button type="button" class="gender-btn">VLAD</button>
+      <button type="button" class="gender-btn">Larry</button>
+	  <button type="button" class="gender-btn">Freeze Corleone</button>
+	  <button type="button" class="gender-btn">Ninho</button>
+      <button type="button" class="gender-btn">Niska</button>
+      <button type="button" class="gender-btn">PLK</button>
+	  <button type="button" class="gender-btn">Damso</button>
+	  <button type="button" class="gender-btn">Werenoi</button>
+      <button type="button" class="gender-btn">Maes</button>
+      <button type="button" class="gender-btn">Sofiane</button>
+	  <button type="button" class="gender-btn">Gambi</button>
+	  <button type="button" class="gender-btn">MHD</button>
+      <button type="button" class="gender-btn">Menace Santana</button>
+      <button type="button" class="gender-btn">Kalash</button>
+	  <button type="button" class="gender-btn">Nekfeu</button>
+	  <button type="button" class="gender-btn">Heuss L'enfoiré</button>
+      <button type="button" class="gender-btn">RK</button>
+      <button type="button" class="gender-btn">Hamza</button>
+	  <button type="button" class="gender-btn">Hös Copperfield</button>
+	  <button type="button" class="gender-btn">13 Block</button>
+      <button type="button" class="gender-btn">Hiro</button>
+      <button type="button" class="gender-btn">Lacrim</button>
+	  <button type="button" class="gender-btn">Faouzia</button>
+	  <button type="button" class="gender-btn">Naza</button>
+      <button type="button" class="gender-btn">Mig</button>
+      <button type="button" class="gender-btn">Disiz</button>
+	  <button type="button" class="gender-btn">Orelsan</button>
+	  <button type="button" class="gender-btn">Soolking</button>
+	  </div>
+    </div>
+	  
+	  
+	 <div class="column">
+      <h2>RAP (US)</h2>
+      <div class="buttons-grid">
+      <button type="button" class="gender-btn">A$AP Rocky</button>
+	  <button type="button" class="gender-btn">A$AP Ferg</button>
+	  <button type="button" class="gender-btn">A$AP Mob</button>
+      <button type="button" class="gender-btn">Migos</button>
+      <button type="button" class="gender-btn">Travis Scott</button>
+	  <button type="button" class="gender-btn">Offset</button>
+	  <button type="button" class="gender-btn">Future</button>
+      <button type="button" class="gender-btn">Kendric Lamar</button>
+      <button type="button" class="gender-btn">YG</button>
+	  <button type="button" class="gender-btn">Juicy J</button>
+	  <button type="button" class="gender-btn">Wiz Khalifa</button>
+      <button type="button" class="gender-btn">2 Chainz</button>
+      <button type="button" class="gender-btn">21 Savage</button>
+	  <button type="button" class="gender-btn">Metro Boomin</button>
+	  <button type="button" class="gender-btn">Drake</button>
+      <button type="button" class="gender-btn">Biggy</button>
+      <button type="button" class="gender-btn">Young Thug</button>
+	  <button type="button" class="gender-btn">Kodak Black</button>
+	  <button type="button" class="gender-btn">Dae Dae</button>
+      <button type="button" class="gender-btn">Gucci Mane</button>
+      <button type="button" class="gender-btn">NAV</button>
+	  <button type="button" class="gender-btn">Ace Hood</button>
+	  <button type="button" class="gender-btn">No Plug</button>
+      <button type="button" class="gender-btn">Eminem</button>
+      <button type="button" class="gender-btn">Bono</button>
+	  <button type="button" class="gender-btn">Kanye West</button>
+	  <button type="button" class="gender-btn">London On Da Track</button>
+      <button type="button" class="gender-btn">Gucci Mane</button>
+      <button type="button" class="gender-btn">Roisee</button>
+	  <button type="button" class="gender-btn">James Blake</button>
+	  <button type="button" class="gender-btn">Swae Lee</button>
+	  <button type="button" class="gender-btn">Lil Wayne</button>
+      <button type="button" class="gender-btn">Nas</button>
+	  <button type="button" class="gender-btn">JID</button>
+	  </div>
+    </div>
+
+  </div>
+      <button class="continue-btn" onclick="window.location.href='activite.html'">
+    Continuer
+  </button> 
+  </div>
+
+<script>
+  document.querySelectorAll('.gender-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+    });
+  });
+</script>
+
+
+</body>
+</html>

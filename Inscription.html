@@ -8,21 +8,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     body {
       min-height: 100vh;
-      background: url("FondVibz.png") no-repeat center / cover;
+      background: url("FondVibz.png") no-repeat center/cover;
       display: flex;
       justify-content: center;
       align-items: center;
     }
-
     body::before {
       content: "";
       position: fixed;
@@ -30,7 +23,6 @@
       background: rgba(255,255,255,0.75);
       z-index: -1;
     }
-
     .card {
       background: #fff;
       padding: 40px;
@@ -39,29 +31,14 @@
       max-width: 420px;
       text-align: center;
     }
-
-    h2 {
-      margin-bottom: 25px;
-      font-weight: 600;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
+    h2 { margin-bottom: 25px; font-weight: 600; }
+    form { display: flex; flex-direction: column; gap: 15px; }
     input {
       padding: 12px 15px;
       border-radius: 12px;
       border: 1px solid #d1d5db;
     }
-
-    input:focus {
-      outline: none;
-      border-color: #22c55e;
-    }
-
+    input:focus { outline: none; border-color: #22c55e; }
     button {
       margin-top: 10px;
       padding: 12px;
@@ -72,17 +49,9 @@
       font-size: 15px;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #16a34a;
-    }
-
-    a {
-      margin-top: 15px;
-      display: inline-block;
-      color: #22c55e;
-      text-decoration: none;
-    }
+    button:hover { background: #16a34a; }
+    a { margin-top: 15px; display: inline-block; color: #22c55e; text-decoration: none; }
+    a:hover { text-decoration: underline; }
   </style>
 </head>
 
@@ -96,65 +65,58 @@
       <input type="text" id="username" placeholder="Identifiant" required>
       <input type="password" id="password" placeholder="Mot de passe" required>
       <input type="password" id="confirm" placeholder="Confirmer le mot de passe" required>
-
       <button type="submit">S'inscrire</button>
     </form>
 
     <a href="connexion.html">Déjà un compte</a>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-  // 1️⃣ Initialisation Supabase
-  const supabase = supabase.createClient(
-    "https://oppyogcmkfctmkbhnbly.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
-  );
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // 1️⃣ Initialisation Supabase
+    const supabase = supabase.createClient(
+      "https://oppyogcmkfctmkbhnbly.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+    );
 
-  // 2️⃣ Formulaire
-  document.getElementById("registerForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+    // 2️⃣ Formulaire
+    const form = document.getElementById("registerForm");
 
-    const email = document.getElementById("email").value.trim();
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm").value;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // stop le refresh
 
-    if (password !== confirm) {
-      alert("Les mots de passe ne correspondent pas");
-      return;
-    }
+      const email = document.getElementById("email").value.trim();
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
 
-    // 3️⃣ Création du compte Auth
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password
+      if (password !== confirm) {
+        alert("Les mots de passe ne correspondent pas");
+        return;
+      }
+
+      // 3️⃣ Création du compte Auth
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      // 4️⃣ Création du profil utilisateur
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert({ id: data.user.id, email, username });
+
+      if (profileError) {
+        alert("Erreur profil : " + profileError.message);
+        return;
+      }
+
+      // 5️⃣ Redirection
+      window.location.href = "f1.html";
     });
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    // 4️⃣ Création du profil utilisateur
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({
-        id: data.user.id,
-        email: email,
-        username: username
-      });
-
-    if (profileError) {
-      alert("Erreur profil : " + profileError.message);
-      return;
-    }
-
-    // 5️⃣ Redirection
-    window.location.href = "f1.html";
-  });
-</script>
+  </script>
 
 </body>
-
 </html>

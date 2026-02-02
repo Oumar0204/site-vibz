@@ -45,7 +45,6 @@
     button.logout-btn { background: #ef4444; color: white; }
     button.logout-btn:hover { background: #dc2626; }
 
-    /* SIDEBAR */
     .sidebar {
       position: fixed;
       right: 20px;
@@ -72,11 +71,10 @@
     <input type="text" id="username" placeholder="Nom d'utilisateur">
     <input type="email" id="email" placeholder="Email">
     <p><strong>ID :</strong> <span id="userId">loading...</span></p>
-    <button class="save-btn" onclick="saveProfile()">Sauvegarder</button>
-    <button class="logout-btn" onclick="logout()">Se déconnecter</button>
+    <button class="save-btn" id="saveBtn">Sauvegarder</button>
+    <button class="logout-btn" id="logoutBtn">Se déconnecter</button>
   </div>
 
-  <!-- BARRE DE NAVIGATION -->
   <div class="sidebar">
     <img src="message.jpg" alt="Messages" onclick="location.href='message.html'">
     <img src="eclaire.png" alt="Favoris" onclick="location.href='favoris.html'">
@@ -84,85 +82,79 @@
     <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // 1️⃣ Initialisation Supabase
+    const supabase = supabase.createClient(
+      "https://oppyogcmkfctmkbhnbly.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+    );
 
-<script>
-  // ⚡ Initialise Supabase
-  const supabase = supabase.createClient(
-    "https://oppyogcmkfctmkbhnbly.supabase.co",
-    "TA_CLE_ANON"
-  );
+    let currentUser = null;
 
-  let currentUser = null;
+    // 2️⃣ Charger le profil
+    async function loadUser() {
+      const { data, error } = await supabase.auth.getUser();
 
-  // ⚡ Charge les infos utilisateur
-  async function loadUser() {
-    const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        window.location.href = "connexion.html";
+        return;
+      }
 
-    if (error || !data.user) {
+      currentUser = data.user;
+      document.getElementById("email").value = currentUser.email;
+      document.getElementById("userId").textContent = currentUser.id;
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (!profileError && profile) {
+        document.getElementById("username").value = profile.username || "";
+      }
+    }
+
+    loadUser();
+
+    // 3️⃣ Sauvegarder profil
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!email) {
+        alert("Email invalide");
+        return;
+      }
+
+      // Update profil
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ username })
+        .eq("id", currentUser.id);
+
+      if (profileError) {
+        alert("Erreur profil : " + profileError.message);
+        return;
+      }
+
+      // Update email
+      const { error: emailError } = await supabase.auth.updateUser({ email });
+
+      if (emailError) {
+        alert("Erreur email : " + emailError.message);
+        return;
+      }
+
+      alert("Profil mis à jour !");
+    });
+
+    // 4️⃣ Déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await supabase.auth.signOut();
       window.location.href = "connexion.html";
-      return;
-    }
-
-    currentUser = data.user;
-    document.getElementById("email").value = currentUser.email;
-    document.getElementById("userId").textContent = currentUser.id;
-
-    // Récupère le profil dans la table "profiles"
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", currentUser.id)
-      .single();
-
-    if (!profileError && profile) {
-      document.getElementById("username").value = profile.username || "";
-    }
-  }
-
-  // ⚡ Sauvegarde le profil
-  async function saveProfile() {
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("email").value.trim();
-
-    if (!email) {
-      alert("Email invalide");
-      return;
-    }
-
-    // Met à jour le username
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .upsert({ id: currentUser.id, username }, { onConflict: "id" });
-
-    if (profileError) {
-      alert(profileError.message);
-      return;
-    }
-
-    // Met à jour l'email dans Auth
-    const { error: emailError } = await supabase.auth.updateUser({ email });
-
-    if (emailError) {
-      alert(emailError.message);
-      return;
-    }
-
-    alert("Profil mis à jour !");
-  }
-
-  // ⚡ Déconnexion
-  async function logout() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      alert("Erreur lors de la déconnexion");
-      return;
-    }
-    window.location.href = "connexion.html";
-  }
-
-  // ⚡ Initialisation
-  loadUser();
-</script>
+    });
+  </script>
 </body>
 </html>

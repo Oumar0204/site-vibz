@@ -110,46 +110,46 @@
   </div>
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script src="js/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-  
-  await supabase.auth.signInWithPassword({
-  email,
-  password
-});
+<script>
+  // ⚡ Initialise Supabase
+  const supabase = supabase.createClient(
+    "https://oppyogcmkfctmkbhnbly.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+  );
 
-    const form = document.getElementById("loginForm");
+  const form = document.getElementById("loginForm");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-      if (!email || !password) {
-        alert("Remplis tous les champs");
-        return;
-      }
+    if (!email || !password) {
+      alert("Remplis tous les champs");
+      return;
+    }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        alert("Identifiants incorrects");
-        return;
-      }
-
-      console.log("Utilisateur connecté :", data.user);
-
-      window.location.href = "home.html";
+    // ⚡ Connexion
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     });
-  </script>
 
+    if (error) {
+      alert("Identifiants incorrects");
+      console.error(error);
+      return;
+    }
+
+    console.log("Utilisateur connecté :", data.user);
+
+    // Redirection vers la page d'accueil
+    window.location.href = "activite.html";
+  });
+</script>
 </body>
 </html>
-
-

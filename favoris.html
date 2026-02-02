@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <title>Mes favoris</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
   <style>
     * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
     body { min-height:100vh; background:#f9fafb; padding:30px 110px 30px 30px;}
@@ -37,62 +35,63 @@
   <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const supabase = supabase.createClient(
     "https://oppyogcmkfctmkbhnbly.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+    "VOTRE_ANON_KEY_ICI"
   );
 
   const container = document.getElementById("favorites");
+  let currentUser = null;
 
   async function loadFavorites() {
     container.innerHTML = "";
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const { data, error } = await supabase.auth.getUser();
+    currentUser = data.user;
+
+    if (!currentUser) {
       container.innerHTML = `<div class="empty">Connecte-toi pour voir tes favoris 😔</div>`;
       return;
     }
 
-    const { data, error } = await supabase
+    const { data: favorites, error: favError } = await supabase
       .from("favorites")
-      .select("activity_id, activities(name, location, image)")
-      .eq("user_id", user.id);
+      .select("id, activity_id, activities(title, city, country, image_url)")
+      .eq("user_id", currentUser.id);
 
-    if (error) {
-      console.error(error);
+    if (favError) {
+      console.error(favError);
       return;
     }
 
-    if (!data.length) {
+    if (!favorites.length) {
       container.innerHTML = `<div class="empty">Aucun favori 😔</div>`;
       return;
     }
 
-    data.forEach(fav => {
+    favorites.forEach(fav => {
       const card = document.createElement("div");
       card.className = "card";
       card.innerHTML = `
-        <button class="remove" onclick="removeFavorite('${fav.activity_id}')">✕</button>
-        <img src="${fav.activities.image}">
+        <button class="remove" onclick="removeFavorite('${fav.id}')">✕</button>
+        <img src="${fav.activities.image_url}">
         <div class="card-content">
-          <h3>${fav.activities.name}</h3>
-          <p>${fav.activities.location}</p>
+          <h3>${fav.activities.title}</h3>
+          <p>${fav.activities.city}, ${fav.activities.country}</p>
         </div>
       `;
       container.appendChild(card);
     });
   }
 
-  async function removeFavorite(activityId) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  async function removeFavorite(favId) {
+    if (!currentUser) return;
 
     await supabase
       .from("favorites")
       .delete()
-      .eq("user_id", user.id)
-      .eq("activity_id", activityId);
+      .eq("id", favId);
 
     loadFavorites();
   }

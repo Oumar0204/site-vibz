@@ -162,6 +162,12 @@ style="margin-bottom:15px; background:#e5e7eb; border:none; padding:8px 14px; bo
   <img src="compte.png" alt="Compte" onclick="location.href='compte.html'">
   <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
 </div>
+<script>
+const supabase = window.supabase.createClient(
+  "https://oppyogcmkfctmkbhnbly.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+);
+</script>
 
 <script>
   const activities = [
@@ -217,191 +223,127 @@ const cities = {
   malte: ["La Valette"],
   chypre: ["Nicosie"]
 };
-  let index = 0;
-  const nameEl = document.getElementById("activity-name");
-  const locationEl = document.getElementById("activity-location");
-  const imageEl = document.getElementById("activity-image");
-  const card = document.getElementById("card");
 
-  function showActivity() {
-    if(index >= activities.length){
-      card.innerHTML = `<div class="empty">Plus d'activités 😔</div>`;
-      return;
-    }
-    nameEl.textContent = activities[index].name;
-    locationEl.textContent = activities[index].location;
-    imageEl.src = activities[index].image;
-  }
-
-  function like(){
-    alert("Activité ajoutée aux favoris : " + activities[index].name);
-    index++;
-    showActivity();
-  }
-
-  function reject(){
-    index++;
-    showActivity();
-  }
-
-  showActivity();
-
-const countrySelect = document.getElementById("countrySelect");
-const citySelect = document.getElementById("citySelect");
-const locationCard = document.getElementById("location-card");
-
-let selectedCity = null;
+let currentUser = null;
+let index = 0;
 let filteredActivities = [];
+let selectedCity = null;
 
-countrySelect.addEventListener("change", () => {
-  const country = countrySelect.value;
-  citySelect.innerHTML = "<option value=''>Sélectionne une ville</option>";
+// Elements
+const nameEl = document.getElementById("activity-name");
+const locationEl = document.getElementById("activity-location");
+const imageEl = document.getElementById("activity-image");
+const card = document.getElementById("card");
 
-  if (!country) {
-    citySelect.disabled = true;
-    return;
+// ⚡ Charger utilisateur
+async function loadUser() {
+  const { data } = await supabase.auth.getUser();
+  currentUser = data.user;
+
+  if (!currentUser) {
+    location.href = "connexion.html";
   }
-
-  cities[country].forEach(city => {
-    const opt = document.createElement("option");
-    opt.value = city;
-    opt.textContent = city;
-    citySelect.appendChild(opt);
-  });
-
-  citySelect.disabled = false;
-});
-
-function validateLocation() {
-  const country = countrySelect.value;
-  const city = citySelect.value;
-
-  if (!country || !city) {
-    alert("Choisis un pays et une ville");
-    return;
-  }
-
-  selectedCity = city;
-  filteredActivities = activities.filter(
-  a => a.city === city && a.country === country
-);
-
-  index = 0;
-  locationCard.style.display = "none";
-  document.getElementById("card").style.display = "block";
-
-  showFilteredActivity();
 }
+await loadUser();
 
-function showFilteredActivity() {
-  if (index >= filteredActivities.length) {
-    card.innerHTML = `<div class="empty">Plus d'activités à ${selectedCity} 😔</div>`;
+// ⚡ Afficher activité
+function showActivity() {
+  const act = filteredActivities.length ? filteredActivities[index] : activities[index];
+
+  if (!act) {
+    card.innerHTML = `<div class="empty">Plus d'activités 😔</div>`;
     return;
   }
 
-  const act = filteredActivities[index];
   nameEl.textContent = act.name;
   locationEl.textContent = `${act.city}, ${act.country}`;
   imageEl.src = act.image;
 }
 
-function openCreate(){
-  document.getElementById("createModal").style.display = "flex";
+// ⚡ Like une activité et sauvegarde sur Supabase
+// exemple pour "like" une activité
+async function like() {
+  if (!currentUser) return;
+
+  const activity = filteredActivities.length
+    ? filteredActivities[index]
+    : activities[index];
+
+  try {
+    await supabase.from("favorites").insert({
+      user_id: currentUser.id,
+      activity_id: activity.id
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
+  index++;
+  showFilteredActivity();
 }
 
-function closeCreate(){
-  document.getElementById("createModal").style.display = "none";
+
+// ⚡ Rejeter
+function reject() {
+  index++;
+  showActivity();
 }
 
-function createActivity(){
+// ⚡ Filtrer activités selon localisation
+function validateLocation() {
+  const country = countrySelect.value;
+  const city = citySelect.value;
+
+  if (!country || !city) return alert("Choisis un pays et une ville");
+
+  selectedCity = city;
+  filteredActivities = activities.filter(a => a.city === city && a.country === country);
+
+  index = 0;
+  locationCard.style.display = "none";
+  card.style.display = "block";
+  showActivity();
+}
+
+// ⚡ Créer activité localement et sur Supabase
+async function createActivity() {
   const name = document.getElementById("actName").value.trim();
-const city = document.getElementById("actCity").value;
-const country = document.getElementById("actCountry").value;
-const date = document.getElementById("actDate").value;
-const time = document.getElementById("actTime").value;
+  const city = actCity.value;
+  const country = actCountry.value;
+  const date = document.getElementById("actDate").value;
+  const time = document.getElementById("actTime").value;
 
-if (!name || !city || !country || !date || !time) {
-  alert("Remplis tous les champs");
-  return;
-}
+  if (!name || !city || !country || !date || !time) return alert("Remplis tous les champs");
 
-  const now = new Date();
   const selected = new Date(date + "T" + time);
-
-  // ❌ passé
-  if(selected < now){
-    alert("Impossible de créer une activité dans le passé");
-    return;
-  }
-
-  // ❌ plus de 2 mois
+  const now = new Date();
   const twoMonthsLater = new Date();
-  twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2);
+  twoMonthsLater.setMonth(now.getMonth() + 2);
 
-  if(selected > twoMonthsLater){
-    alert("Maximum 2 mois à l’avance");
-    return;
-  }
+  if (selected < now) return alert("Impossible dans le passé");
+  if (selected > twoMonthsLater) return alert("Maximum 2 mois à l’avance");
 
-activities.unshift({
-  id: Date.now(),
-  name,
-  city,
-  country,
-  image: "default.jpg"
-});
+  const newAct = {
+    id: Date.now(),
+    name,
+    city,
+    country,
+    image: "default.jpg"
+  };
+
+  // Ajouter localement
+  activities.unshift(newAct);
+
+  // Ajouter sur Supabase
+  await supabase.from("activities").insert(newAct);
 
   index = 0;
   showActivity();
   closeCreate();
 }
 
-// Pour le modal de création
-const modalCountrySelect = document.createElement("select");
-modalCountrySelect.id = "actCountry";
-modalCountrySelect.style = "width:100%; padding:10px; margin-bottom:10px; border-radius:10px;";
-modalCountrySelect.innerHTML = "<option value=''>Sélectionne un pays</option>";
-Object.keys(cities).forEach(c => {
-  const opt = document.createElement("option");
-  opt.value = c;
-  opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-  modalCountrySelect.appendChild(opt);
-});
-document.getElementById("createModal").insertBefore(modalCountrySelect, document.getElementById("actCity"));
+// ⚡ Initialiser affichage
+showActivity();
 
-const actCountry = document.getElementById("actCountry");
-const actCity = document.getElementById("actCity");
-
-// Quand on change de pays dans le modal
-actCountry.addEventListener("change", () => {
-  const country = actCountry.value;
-  actCity.innerHTML = "<option value=''>Sélectionne une ville</option>";
-
-  if (!country) {
-    actCity.disabled = true;
-    return;
-  }
-
-  cities[country].forEach(city => {
-    const opt = document.createElement("option");
-    opt.value = city;
-    opt.textContent = city;
-    actCity.appendChild(opt);
-  });
-
-  actCity.disabled = false;
-});
-
-const backBtn = document.getElementById("backBtn");
-
-backBtn.addEventListener("click", () => {
-  document.getElementById("card").style.display = "none";
-  locationCard.style.display = "block";
-
-  index = 0;
-  filteredActivities = [];
-});
-
-</script>
 </body>
 </html>

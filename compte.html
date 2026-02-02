@@ -84,70 +84,85 @@
     <img src="parametre.png" alt="Paramètres" onclick="location.href='parametre.html'">
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="js/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    let currentUser;
+<script>
+  // ⚡ Initialise Supabase
+  const supabase = supabase.createClient(
+    "https://oppyogcmkfctmkbhnbly.supabase.co",
+    "TA_CLE_ANON"
+  );
 
-    async function loadUser() {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error || !user) {
-        alert("Utilisateur non connecté !");
-        window.location.href = "connexion.html";
-        return;
-      }
-      currentUser = user;
-      document.getElementById("email").value = user.email;
-      document.getElementById("userId").textContent = user.id;
+  let currentUser = null;
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("id", user.id)
-        .single();
+  // ⚡ Charge les infos utilisateur
+  async function loadUser() {
+    const { data, error } = await supabase.auth.getUser();
 
-      document.getElementById("username").value = profile?.username || "";
-    }
-
-    async function saveProfile() {
-      const username = document.getElementById("username").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (!email) {
-        alert("L'email ne peut pas être vide !");
-        return;
-      }
-
-      // Mise à jour du nom d'utilisateur dans la table profiles
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .upsert({ id: currentUser.id, username: username }, { onConflict: "id" });
-
-      if (profileError) {
-        alert("Erreur lors de la mise à jour du profil : " + profileError.message);
-        return;
-      }
-
-      // Mise à jour de l'email dans Supabase Auth
-      const { error: emailError } = await supabase.auth.updateUser({ email });
-
-      if (emailError) {
-        alert("Erreur lors de la mise à jour de l'email : " + emailError.message);
-        return;
-      }
-
-      alert("Profil mis à jour avec succès !");
-    }
-
-    async function logout() {
-      const { error } = await supabase.auth.signOut();
-      if (error) { alert("Erreur lors de la déconnexion"); return; }
+    if (error || !data.user) {
       window.location.href = "connexion.html";
+      return;
     }
 
-    loadUser();
-  </script>
+    currentUser = data.user;
+    document.getElementById("email").value = currentUser.email;
+    document.getElementById("userId").textContent = currentUser.id;
 
+    // Récupère le profil dans la table "profiles"
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (!profileError && profile) {
+      document.getElementById("username").value = profile.username || "";
+    }
+  }
+
+  // ⚡ Sauvegarde le profil
+  async function saveProfile() {
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+
+    if (!email) {
+      alert("Email invalide");
+      return;
+    }
+
+    // Met à jour le username
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert({ id: currentUser.id, username }, { onConflict: "id" });
+
+    if (profileError) {
+      alert(profileError.message);
+      return;
+    }
+
+    // Met à jour l'email dans Auth
+    const { error: emailError } = await supabase.auth.updateUser({ email });
+
+    if (emailError) {
+      alert(emailError.message);
+      return;
+    }
+
+    alert("Profil mis à jour !");
+  }
+
+  // ⚡ Déconnexion
+  async function logout() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert("Erreur lors de la déconnexion");
+      return;
+    }
+    window.location.href = "connexion.html";
+  }
+
+  // ⚡ Initialisation
+  loadUser();
+</script>
 </body>
 </html>

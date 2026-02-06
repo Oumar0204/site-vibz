@@ -69,38 +69,42 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const supabase = supabase.createClient(
-      "https://oppyogcmkfctmkbhnbly.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
-    );
+<script>
+const supabase = supabase.createClient(
+  "https://oppyogcmkfctmkbhnbly.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+);
 
-    const form = document.getElementById("loginForm");
+const form = document.getElementById("loginForm");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // stop le refresh
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-      if (!email || !password) {
-        alert("Remplis tous les champs");
-        return;
-      }
+  if (!email || !password) {
+    alert("Remplis tous les champs");
+    return;
+  }
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-      if (error) {
-        alert("Email ou mot de passe incorrect");
-        return;
-      }
+  if (error) {
+    alert(error.message || "Email ou mot de passe incorrect");
+    return;
+  }
 
-      // Redirection après connexion
-      window.location.href = "activite.html";
-    });
-  </script>
+  if (!data.user) {
+    alert("Impossible de se connecter : utilisateur non confirmé ou bloqué");
+    return;
+  }
+
+  // Redirection
+  window.location.href = "activite.html";
+});
+</script>
+
 </body>
+
 </html>

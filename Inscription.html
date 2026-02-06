@@ -72,51 +72,57 @@
   </div>
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // 1️⃣ Initialisation Supabase
-    const supabase = supabase.createClient(
-      "https://oppyogcmkfctmkbhnbly.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
-    );
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    // 2️⃣ Formulaire
-    const form = document.getElementById("registerForm");
+<script>
+  const supabaseClient = window.supabase.createClient(
+    "https://oppyogcmkfctmkbhnbly.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wcHlvZ2Nta2ZjdG1rYmhuYmx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwNzI5NDgsImV4cCI6MjA4NDY0ODk0OH0.Diimf05_xtEukBNk4sQb8IzUeRvQA2la32l0-wHFvH0"
+  );
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault(); // stop le refresh
+  const form = document.getElementById("registerForm");
 
-      const email = document.getElementById("email").value.trim();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value;
-      const confirm = document.getElementById("confirm").value;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      if (password !== confirm) {
-        alert("Les mots de passe ne correspondent pas");
-        return;
-      }
+    const emailValue = document.getElementById("email").value.trim();
+    const usernameValue = document.getElementById("username").value.trim();
+    const passwordValue = document.getElementById("password").value;
+    const confirmValue = document.getElementById("confirm").value;
 
-      // 3️⃣ Création du compte Auth
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        alert(error.message);
-        return;
-      }
+    if (passwordValue !== confirmValue) {
+      alert("Les mots de passe ne correspondent pas");
+      return;
+    }
 
-      // 4️⃣ Création du profil utilisateur
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert({ id: data.user.id, email, username });
-
-      if (profileError) {
-        alert("Erreur profil : " + profileError.message);
-        return;
-      }
-
-      // 5️⃣ Redirection
-      window.location.href = "f1.html";
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: emailValue,
+      password: passwordValue
     });
-  </script>
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const { error: profileError } = await supabaseClient
+      .from("profiles")
+      .insert({
+        id: data.user.id,
+        email: emailValue,
+        username: usernameValue
+      });
+
+    if (profileError) {
+      alert(profileError.message);
+      return;
+    }
+
+    window.location.href = "f1.html";
+  });
+</script>
+
 
 </body>
 </html>
+
